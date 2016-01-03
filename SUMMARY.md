@@ -1,6 +1,6 @@
 # Summary
 
-* [Bibliography](sections/bibliography.md)
 * [Articles](sections/articles.md)
+* [Bibliography](sections/bibliography.md)
 * [Notes](notes/notes.md)
 
