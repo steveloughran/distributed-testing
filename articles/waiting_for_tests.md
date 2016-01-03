@@ -1,5 +1,7 @@
 # Why is so much of my life wasted waiting for test runs to complete?
 
+_Published [June 15, 2015](http://steveloughran.blogspot.co.uk/2015/06/why-is-so-much-of-my-life-wasted.html)_
+
 I've spent the weekend enduring the pain of kerberos-related functional test failures, test runs that take time to finish, especially as its token expiry between deployed services which is the Source of Madness (copyright (c) 1988 MIT).
 
 Anyone who follows me on Strava can infer when those runs take place as if its a long one, I've nipped down to the road bike on the turbo trainer and done a bit of exercise while waiting for the results.
@@ -10,7 +12,7 @@ While a test is running, the different services in the cluster are all generatin
 
 Why do I have to wait until the entire test run is completed for those results to appear?
 
-There's no fundamental reason for that to be the case. It's just the way that the functional tests have evolved under the unit test runners, test runners designed to run short lived unit tests of little classes, runs where stdout and stderr were captured without any expectation of structured format. When `<junit>` completed individual test cases, it'd save the XML DOM build in memory to an XML file under build/tests. After Junit itself completed, the build.xml would have a `<junitreport>` task to map XML -> HTML in a wondrous piece of XSLT. 
+There's no fundamental reason for that to be the case. It's just the way that the functional tests have evolved under the unit test runners, test runners designed to run short lived unit tests of little classes, runs where stdout and stderr were captured without any expectation of structured format. When `<junit>` completed individual test cases, it'd save the XML DOM build in memory to an XML file under build/tests. After Junit itself completed, the build.xml would have a `<junitreport>` task to map XML to HTML in a wondrous piece of XSLT. 
 
 Maven surefire does exactly the same thing, except it's build reporter doesn't make it easy to stream the results to both XML files and to the console at the same time.
 
