@@ -2,5 +2,5 @@
 
 * [Bibliography](sections/bibliography.md)
 * [Notes](notes/notes.md)
-* Articles
+* [Articles](sections/articles.md)
 
