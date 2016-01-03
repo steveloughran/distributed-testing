@@ -1,0 +1,51 @@
+{
+  "gitbook": ">=2.0.0" ,
+  "title": "Testing Distributed Systems",
+  "description": "Thoughts on Distributed Testing",
+  "variables": {
+        "asf": "Apache Software Foundation",
+        "author":"Steve Loughran",
+        "title": "Hadoop and Kerberos: The Madness beyond the Gate",
+        "hadoop-latest": "2.7.1"
+    },
+    "plugins": [
+      "autocover",
+      "katex",
+      "printlinks",
+      "include-codeblock"],
+    "pluginsConfig": {
+        "autocover": {
+          "title": "Testing Distributed Systems",
+              "author": "Steve Loughran",
+              "font": {
+                  "size": null,
+                  "family": "Impact",
+                  "color": "#FFF"
+              },
+              "size": {
+                  "w": 4000,
+                  "h": 3000
+              },
+              "background": {
+                  "color": "#09F"
+              }
+        }
+    },
+    "pdf": {
+        "pageNumbers": true,
+        "fontSize": 11,
+        "paperSize": "a4",
+        "margin": {
+            "right": 62,
+            "left": 62,
+            "top": 36,
+            "bottom": 36
+        },
+
+        "comment-1":"//Header HTML template. Available variables: _PAGENUM_, _TITLE_, _AUTHOR_ and _SECTION_.",
+        "headerTemplate-off": "_TITLE_",
+
+        "comment":"//Footer HTML template. Available variables: _PAGENUM_, _TITLE_, _AUTHOR_ and _SECTION_.",
+        "footerTemplate-off": "_PAGENUM_"
+    }
+}
