@@ -1,5 +1,5 @@
 # Summary
 
 * [Bibliography](sections/bibliography.md)
-* Notes
+* [Notes](notes/notes.md)
 
