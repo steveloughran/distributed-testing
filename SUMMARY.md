@@ -1,4 +1,4 @@
 # Summary
 
-* Bibliography
+* [Bibliography](sections/bibliography.md)
 
