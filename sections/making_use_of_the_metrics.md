@@ -1,3 +1,7 @@
+# Making use of the Metrics
+
+_December, 2015_
+
 I've been doing more scalatest work, as part of SPARK-7889, SPARK-1537. And, in SLIDER-82, anti-affine work placement across a YARN cluster, so that code can be spread across the cluster for reliability as well as performance.
 
 
@@ -13,7 +17,10 @@ Take a test which was failing on December 4, 2015:
   FsHistoryProvider: logdir=file:/Users/stevel/Projects/spark/core/target/tmp/spark-a2ae0d7a-ba8a-4bf7-95ff-a8d240a04b2f/,
   last scan time=1449247393000
   Cached application count =1}
- 	FsApplicationHistoryInfo(lastUpdated = 1449247374000, ApplicationHistoryInfo(local-1449247373293,test,List(FsApplicationAttemptInfo(local-1449247373293.inprogress, test, local-1449247373293, ApplicationAttemptInfo(None,1449247372558,-1,1449247374000,stevel,false), 50882, 7))
+ 	FsApplicationHistoryInfo(lastUpdated = 1449247374000,
+ 	 ApplicationHistoryInfo(local-1449247373293,test,
+ 	 List(FsApplicationAttemptInfo(local-1449247373293.inprogress, test, local-1449247373293,
+ 	 ApplicationAttemptInfo(None,1449247372558,-1,1449247374000,stevel,false), 50882, 7))
   cache = ApplicationCache(refreshInterval=250, retainedApplications= 50); time= 1449247394099; entry count= 1
  ----
 	local-1449247373293 -> UI org.apache.spark.ui.SparkUI@6124d9ce, data=Some(FsHistoryProviderUpdateState(2)), completed=false, loadTime=1449247373000 probeTime=1449247373740
@@ -26,7 +33,11 @@ Take a test which was failing on December 4, 2015:
  update.triggered.count = 0
  ----
 	
-  dir = ArraySeq(DeprecatedRawLocalFileStatus{path=file:/Users/stevel/Projects/spark/core/target/tmp/spark-a2ae0d7a-ba8a-4bf7-95ff-a8d240a04b2f/local-1449247373293.inprogress; isDirectory=false; length=50882; replication=1; blocksize=33554432; modification_time=1449247374000; access_time=0; owner=; group=; permission=rw-rw-rw-; isSymlink=false}). (HistoryServerSuite.scala:437)
+  dir = ArraySeq(DeprecatedRawLocalFileStatus{path=file:/Users/stevel/Projects/spark/core/target/tmp/spark-a2ae0d7a-ba8a-4bf7-95ff-a8d240a04b2f/local-1449247373293.inprogress;
+  isDirectory=false; length=50882; replication=1; blocksize=33554432;
+  modification_time=1449247374000; access_time=0; owner=; group=;
+  permission=rw-rw-rw-; isSymlink=false}).
+  (HistoryServerSuite.scala:437)
 
 ```
 
