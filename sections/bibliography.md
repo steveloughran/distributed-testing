@@ -12,10 +12,13 @@ and covers how it's found problems in Hadoop.
 [Summary](http://blog.acolyer.org/2015/03/25/samc-semantic-aware-model-checking-for-fast-discovery-of-deep-bugs-in-cloud-systems/)
 
 
-### 
-https://www.researchgate.net/publication/260212565_Model-Based_Testing_of_Global_Properties_on_Large-Scale_Distributed_Systems
+###  Model-Based Testing of Global Properties on Large-Scale Distributed Systems
 
- Information and Software Technology (Impact Factor: 1.05). 07/2014; 56(7). DOI: 10.1016/j.infsof.2014.02.002 
+
+ Information and Software Technology (Impact Factor: 1.05). 07/2014; 56(7). DOI: 10.1016/j.infsof.2014.02.002
+ 
+https://www.researchgate.net/publication/260212565_Model-Based_Testing_of_Global_Properties_on_Large-Scale_Distributed_Systems
+ 
  
  
  ### Test architectures for testing distributed system
