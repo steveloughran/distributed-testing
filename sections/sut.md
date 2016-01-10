@@ -30,10 +30,12 @@ They consider the problems of DST to be
 3. non-determinism due to race conditions within the SUT.
 
 
-We would add more
+We would add more problems.
 
 1. The interference of components with each other. Multiple components running on the same host may unintentionally alter the behaviour of other components on the same system, possibly simply through excessive CPU or memory usage; perhaps by some behaviour triggering a failure condition elsewhere (for example: filling up a temporary directory with log messages, so using up disk space). Network use and traffic can mean that components across the entire cluster may cause interference.
 2. The aggregate state of the system is actually defined by the entire state of the computers hosting the SUT and the networking, as well as the components themselves. That is, the SUT is the software as instantiated within a physical or virtualized cluster, rather than the software itself.
-3. 
+3. Time has to be considered. While messages between components is the communication mechanism, each host can be viewed as having its own (isolated) clock, moving forwards at approximately the same rate as those on other hosts. This is an integral requirement of the TCP/IP protocol, and used by layers above, from Zookeeper's ZAB protocol to the Hadoop IPC channel timeout and retry policies. This is a significant complication. However, as the primary concern is about scheduled events, one may view the OS scheduler as a component, whose (usually monotonically increasing) clock is used to trigger actions (thread scheduling, timeout notifications). Thus it too is a deterministic component within the SUT, a provider of action messages to other components on the same host.
+
+
 
 
