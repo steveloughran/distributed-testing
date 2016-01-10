@@ -21,7 +21,7 @@ https://www.researchgate.net/publication/260212565_Model-Based_Testing_of_Global
  
  
  
- ### Test architectures for testing distributed system
+ #### [Ulrich99] Test architectures for testing distributed system
  https://www.researchgate.net/publication/221047003_Architectures_for_Testing_Distributed_Systems
  
  Ulrich, A.W., Zimmerer, P. and Chrobok-Diening, G., 1999. Test architectures for testing distributed systems. In Proceedings of the 12th International Software Quality Week.
