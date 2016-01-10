@@ -22,3 +22,16 @@ Ullrich, Zimmerer and Chrobok-Diening also define both the distributed system as
 S A S is a transition relation; and s0 S is the initial state.
 
 Actions which trigger state transitions may be external, *reactive*, or they may be internal, between components. Note that their model does not consider events triggered within components. When testing a system such as Hadoop, we lack that luxury.
+
+They consider the problems of DST to be
+
+1. non-determinism due to interleaving of concurrent actions of the SUT
+2. non-determinism within a component of the SUT, and
+3. non-determinism due to race conditions within the SUT.
+
+
+We would add more
+
+1. The interference of components with each other. Multiple components running on the same host may unintentionally alter the behaviour of other components
+
+
