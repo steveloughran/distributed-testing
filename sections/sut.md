@@ -5,9 +5,13 @@ A core concept in Distributed System Testing is the *System Under Test* (SUT)
 
 It is defined in [Ulrich99] as part of a series of definitions
 
-1. A *adistributed system* consists of a collection of compo- nents, each of them realizing a sequential flow of execution. Each component has an interface that defines its incoming and outgoing messages.
+1. A *distributed system* consists of a collection of components,
+each of them realizing a sequential flow of execution.
+Each component has an interface that defines its incoming and outgoing messages.
 
-1. The System Under Test (SUT) is the executable implementation of the distributed software system to be tested,
+1. The System Under Test (SUT) is the executable implementation of
+the distributed software system to be tested,
+
 2. The purpose of testing, then is to verify that the behavior of the SUT matches that specified.
 
 To test this implementation, the SUT must be extended with
@@ -18,7 +22,8 @@ To test this implementation, the SUT must be extended with
 
 Ullrich, Zimmerer and Chrobok-Diening also define both the distributed system as a Deterministic Finite State Machine, DFSM, 
 
->  A labeled transition system (LTS or machine for short) M is defined by a quadru- ple (S, A, , s0), where S is a finite set of states; A is a finite set of actions (the alphabet);
+>  A labeled transition system (LTS or machine for short) M is defined by
+ a quadruple (S, A, , s0), where S is a finite set of states; A is a finite set of actions (the alphabet);
 S A S is a transition relation; and s0 S is the initial state.
 
 Actions which trigger state transitions may be external, *reactive*, or they may be internal, between components. Note that their model does not consider events triggered within components. When testing a system such as Hadoop, we lack that luxury.

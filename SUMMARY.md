@@ -2,6 +2,7 @@
 
 * [Introduction](sections/introduction.md)
 * [Related Work](sections/related_work.md)
+* [System Under Test](sections/sut.md)
 * [Making use of the Metrics](sections/making_use_of_the_metrics.md)
 
 * Articles

@@ -32,7 +32,7 @@ Take a test which was failing on December 4, 2015:
  update.probe.count = 638
  update.triggered.count = 0
  ----
-	
+
   dir = ArraySeq(DeprecatedRawLocalFileStatus{path=file:/Users/stevel/Projects/spark/core/target/tmp/spark-a2ae0d7a-ba8a-4bf7-95ff-a8d240a04b2f/local-1449247373293.inprogress;
   isDirectory=false; length=50882; replication=1; blocksize=33554432;
   modification_time=1449247374000; access_time=0; owner=; group=;
@@ -46,8 +46,9 @@ Two points of interest here.
 First: I'm using the classic `assert(2 === actual)` style of assertion, rather than the "the more expressive matchers DSL." of scalatest, which here would be `actual should be (2)`. Why? Because when an assert fails, I want to know the state of the system, rather than just 2 != 1 at line 429. So my "legacy" assert includes a better explanation, and diagnostics as built from the string values of objects in the system, objects which I've given meaningful `toString()` values for the sake of the tests. While I would like an elegant and declarative test language, given the choice between that and one which generates reports I can debug from a Jenkins run —I'll go for the other, no matter how ugly.
 
 Second, that list of values at the bottom, from `"lookup-count = 653"` to `"update.triggered.count = 0"` are not just counters for the sake of test failures: _they are Codahale metric Counter instances_. As these are wrappers around atomic longs, you can just increment them after events, and check those values in asserts:
-```
-  assert(metrics.lookupCount.getCount > 1, s"lookup count too low in $metrics")
+
+```java
+assert(metrics.lookupCount.getCount > 1, s"lookup count too low in $metrics")
 ```
 
 Nice and straightforward, no different from looking up an `AtomicLong` value in an object.
@@ -77,7 +78,8 @@ I want to publish a binary metric: has the slider App Master had a node map upda
 
 The fix there is obvious for anyone who has programmed in C:
 
-```
+```java
+
 public class BoolMetric extends AtomicBoolean implements Metric, Gauge<Integer> {
 
  @Override

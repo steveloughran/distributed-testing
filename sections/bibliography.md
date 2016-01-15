@@ -15,16 +15,16 @@ and covers how it's found problems in Hadoop.
 ###  Model-Based Testing of Global Properties on Large-Scale Distributed Systems
 
 
- Information and Software Technology (Impact Factor: 1.05). 07/2014; 56(7). DOI: 10.1016/j.infsof.2014.02.002
- 
+Information and Software Technology (Impact Factor: 1.05). 07/2014; 56(7). DOI: 10.1016/j.infsof.2014.02.002
+
 https://www.researchgate.net/publication/260212565_Model-Based_Testing_of_Global_Properties_on_Large-Scale_Distributed_Systems
- 
- 
- 
- #### [Ulrich99] Test architectures for testing distributed system
- https://www.researchgate.net/publication/221047003_Architectures_for_Testing_Distributed_Systems
- 
- Ulrich, A.W., Zimmerer, P. and Chrobok-Diening, G., 1999. Test architectures for testing distributed systems. In Proceedings of the 12th International Software Quality Week.
- 
- DOI: 10.1007/978-0-387-35567-2_7
+
+
+
+#### [Ulrich99] Test architectures for testing distributed system
+https://www.researchgate.net/publication/221047003_Architectures_for_Testing_Distributed_Systems
+
+Ulrich, A.W., Zimmerer, P. and Chrobok-Diening, G., 1999. Test architectures for testing distributed systems. In Proceedings of the 12th International Software Quality Week.
+
+DOI: 10.1007/978-0-387-35567-2_7
  
