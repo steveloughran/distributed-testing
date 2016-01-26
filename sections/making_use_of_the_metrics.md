@@ -55,7 +55,7 @@ Nice and straightforward, no different from looking up an `AtomicLong` value in 
 
 But, as they are metrics, _I can also check and assert on the state of remote services in the cluster_. That is, I can bring up a real spark history server instance in a real hadoop cluster, schedule real, work, have remote clients query the history server, _and make similar assertions over the state of those metrics_.
 
-## By making the observable state of object instances real Metric values, I can extend their observability from unit tests to system tests. 
+### By making the observable state of object instances real Metric values, I can extend their observability from unit tests to system tests. 
 
 1. This makes assertions on the state of remote services a simple matter of `GET /service/metrics/${metric}` + parsing.
 1. It ensures that the internal state of the system is visible for diagnostics of both test failures and production system problems. Here: are there too many evictions (==cache size too small)? Are too many update probes taking place (==probe window too small)? What about the lookup count (==metric of client load on the system). These are things which the ops team may be grateful for in the future, as now there's more information about what is going on.
@@ -78,7 +78,7 @@ I want to publish a binary metric: has the slider App Master had a node map upda
 
 The fix there is obvious for anyone who has programmed in C:
 
-```java
+```scala
 
 public class BoolMetric extends AtomicBoolean implements Metric, Gauge<Integer> {
 
