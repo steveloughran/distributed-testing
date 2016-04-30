@@ -79,4 +79,24 @@ returning a string. This is how it avoids evaluating interpolated strings unless
 This means that it could be possible to have some fairly complex operations called on an assertion
 failure, including potentially querying services for state, dumping the output, etc.
 
+### Can't specify individual test cases within a class
 
+This significantly complicates debugging of long tests, as the entire test suite needs to
+be run, rather than just the single test case at fault. This increases test times,
+makes interpreting the logs harder, and effectivley encourages developers to comment out
+test cases while debugging the other ones.
+
+This problem becomes tractable once you examine the source code. The construct
+
+```scala
+test("name") {
+  ...
+}
+```
+is not declaring a JUnit-style method. It is invoking the method `registerTest(name, closure)`.
+The individual `test()` declarations are simply invocations of the `test()` method during
+the initialisation of the class. Thus there are no test case method names for the test runner
+to filter on.
+
+What can be done, however, is to make that invocation of `registerTest(name, closure)` conditional
+on the state of a system property, one which can be passed down by the test runner.
