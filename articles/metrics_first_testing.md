@@ -7,7 +7,7 @@
 
 In this article I introduce the concept of Metrics First Testing, and show how instrumenting the internals of classes, enabling them to be published as metrics, enables better testing of distributed systems, while also offering potential to provide more information in production.
 
-Exporting instrumented classes in the form of remotely accessible metrics permits test runners to query the state of the System Under Test, both to make assertions about its state, and to collect histories and snapshots of its state for post-run diagnostics.
+Exporting instrumented classes in the form of remotely accessible metrics permits test runners to query the state of the **System Under Test**, both to make assertions about its state, and to collect histories and snapshots of its state for post-run diagnostics.
 
 This same observable state *may be useful* in production —though there is currently no evidence to support this hypothesis.
 
@@ -15,7 +15,7 @@ There are a number of issues with the concept. A key one is if these metrics do 
 
 ## Introduction: Metrics-first testing 
 
-Recently I've been doing more scalatest work, as part of SPARK-7889, SPARK-1537, SPARK-7481. Alongside that, in SLIDER-82, anti-affine work placement across a YARN cluster, And, most recently, wrapping up S3a performance and robustness for Hadoop 2.8, [HADOOP-11694](https://issues.apache.org/jira/browse/HADOOP-11694), where the cost of an HTTP reconnect appears on a par with reading 800KB of data, meaning: you are better off reading ahead than breaking a connection on any forward seek under ~900KB. (that's transatlantic to an 80MB FTTC connection; setup time is fixed, TCP slow start also means that the longer the connection is held, the better the bandwidth gets)
+Recently I've been doing more [scalatest](http://www.scalatest.org/) work, as part of SPARK-7889, SPARK-1537, SPARK-7481. Alongside that, in SLIDER-82, anti-affine work placement across a YARN cluster, And, most recently, wrapping up S3a performance and robustness for Hadoop 2.8, [HADOOP-11694](https://issues.apache.org/jira/browse/HADOOP-11694), where the cost of an HTTP reconnect appears on a par with reading 800KB of data, meaning: you are better off reading ahead than breaking a connection on any forward seek under ~900KB. (that's transatlantic to an 80MB FTTC connection; setup time is fixed, TCP slow start also means that the longer the connection is held, the better the bandwidth gets)
 
 On these projects, I've been exploring the notion of *metrics-first testing*. That is: your code uses metric counters as a way of exposing the observable state of the core classes, and then tests can query those metrics, either at the API level or via web views.
 
@@ -75,7 +75,7 @@ Now here's a Spark test using the same source file and s3a connector
      }
 
 
-Which produces, along with the noise of a local spark run, some details o
+Which produces, along with the noise of a local spark run, some details:
 
     2016-04-26 12:08:25,901  executor.Executor Running task 0.0 in stage 0.0 (TID 0)
     2016-04-26 12:08:25,924  rdd.HadoopRDD Input split: s3a://landsat-pds/scene_list.gz:0+20430493
@@ -186,13 +186,17 @@ The other issue is simply an execution one: wiring the metrics up, unwiring them
 Java volatile variables are slightly more expensive than C++ ones, as they act as barrier operations rather than just telling the compiler never to cache them. But they are still simple types.  In contrast, Atomic* are big bits of Java code, with lots of contention if many threads try to update some metric. This is why Coda Hale use a an AtomicAccumulator class, one that [eventually surfaces in Java 8.](https://docs.oracle.com/javase/8/docs/api/index.html?java/util/concurrent/atomic/AtomicInteger.html). But while having reduced contention, that's still a piece of java code trying to acquire and release locks.  *It would only take a small change in the JRE for `volatile`, or perhaps some variant, `atomic` to implement atomic ++ and += calls at the machine code level, so the cost of incrementing a volatile would be almost the same as setting it*.  We have to assume that Sun didn't do that in 1995-6 as they were targeting 8 bit machines, where even incrementing a 16 bit `short` value was not something all CPUs could guarantee to do atomically. Now? Even watches come with 32 bit CPUs, phones are 64 bit. It's time for Oracle to look ahead and conclude that it's time for even 64 bit volatile addition to made atomic.  For now, I'm making some of the counters which I know are only being updated within thread-safe code (or code that says "should only be used in one thread") volatile; querying them won't hold up the system.   
 
 
-## Pressure to align your counters into a bigger piece of work
+### Pressure to align your counters into a bigger piece of work
 
-For the S3a code, this surfaces in (https://issues.apache.org/jira/browse/HDFS-10175)[HDFS-10175]; a proposal to make more of those FS level stats visible, so that at the end of an SQL query run, you can get aggregate stats on what all filesystems have been up to. I do think this is admirable, and with the costs of an S3 HTTP reconnect being 0.1s, it's good to know how many there are. But at the same time, these overreaching goals shouldn't be an excuse to hold up the low level counters and optimisations which can be done at a micro level —what they do say is "don't make this per-class stuff public" until we can do it consistently. The challenge then becomes technical: how to collect metrics which would segue into the bigger piece of work, are useful on their own, and which don't create a long term commitment of API maintenance.
+For the S3a code, this surfaces in [HDFS-10175](https://issues.apache.org/jira/browse/HDFS-10175); a proposal to make more of those FS level stats visible, so that at the end of an SQL query run, you can get aggregate stats on what all filesystems have been up to. I do think this is admirable, and with the costs of an S3 HTTP reconnect being 0.1s, it's good to know how many there are. But at the same time, these overreaching goals shouldn't be an excuse to hold up the low-level counters and optimisations which can be done at a micro level —what they do say is "don't make this per-class stuff public" until we can do it consistently. The challenge then becomes technical: how to collect metrics which would segue into the bigger piece of work, are useful on their own, and which don't create a long term commitment of API maintenance.
 
 ### Over-instrumentation
 
-As described by Jakob Homan: "* Large distributed systems can overwhelm metrics aggregators; For instance, Samza jobs generated so many metrics LI's internal system blanched and we had to add a feature to blacklist whole metric classes "*  These low-level metrics may be utterly irrelevant to most processes, yet, if published and recorded, will add extra load to the monitoring infrastructure. Again, this argues for making the low-level metrics off by default, unless explicitly enabled by a debugging switch.  In fact, it almost argues for having some metric enabling profile similar to log4J settings, where you could turn on, say, the S3a metrics at DEBUG level for a run, leaving it off elsewhere. That could be something to investigate further. Perhaps I could start by actually using the log level of the classes as the cue to determine which metrics to register:  
+As described by Jakob Homan: 
+
+>Large distributed systems can overwhelm metrics aggregators; For instance, Samza jobs generated so many metrics LI's internal system blanched and we had to add a feature to blacklist whole metric classes 
+
+These low-level metrics may be utterly irrelevant to most processes, yet, if published and recorded, will add extra load to the monitoring infrastructure. Again, this argues for making the low-level metrics off by default, unless explicitly enabled by a debugging switch.  In fact, it almost argues for having some metric enabling profile similar to log4J settings, where you could turn on, say, the S3a metrics at DEBUG level for a run, leaving it off elsewhere. That could be something to investigate further. Perhaps I could start by actually using the log level of the classes as the cue to determine which metrics to register:  
 
     if (LOG.isDebugEnabled) {
        registerInternalMetrics();
@@ -205,7 +209,7 @@ This an issue which surfaced during maintenance, when breaking up a class into t
 
 This refactoring broke those tests which were directly referencing the variables. Although the tests could be updated, or the original class extended with delegating accessors, both actions incur costs *and remain brittle against future change*
 
-I'll cover my final solution in detail, but essentially: making access to metrics via map lookup operations, passing in the string value of the metric. Delegation becomes a matter of extending the main class's map with those of the associated instances of the now-refactored classes.
+I'll cover my final solution in detail, but essentially: making access to metrics via map lookup operations, passing in the string value of the metric. Delegation becomes a matter of extending the main class's map with those of the associated instances of the now-refactored classes. As well as making the tests less brittle, it does enforce keeping the names of metrics invariant, which is good for external consumption.
 
 ### Metrics are part of your public API
 
