@@ -151,7 +151,7 @@ I'm just starting to experiment with this metrics-first testing.
 I have ambitions to make metric capture and monitoring a more integral part of test runs. In particular, I want test runners to capture those metrics. That's either by setting up the services to feed the metrics to the test runner itself, capturing the metrics directly by polling servlet interfaces, or capturing them indirectly via the cluster management tools.  Initially that'll just be a series of snapshots over time, but really, we could go beyond that and include in test reports the actual view of the metrics: what happened to various values over time? when when Yarn timeline server says its average CPU was at 85%, what was the spark history server saying its cache eviction rate was?  Similarly, those s3a counters are just initially for microbenchmarks under `hadoop-tools/hadoop-aws`, but they could be extended up the stack, through Hive and spark queries, to full applications. It'll be noisy, but hey, we've got tooling to deal with lots of machine parseable noise, as I call it: Apache Zeppelin. 
 
 
-## What are the flaws in this concept
+## What are the flaws in this concept?
 
 ### Relevance of metrics beyond tests
 
@@ -190,6 +190,10 @@ Java volatile variables are slightly more expensive than C++ ones, as they act a
 
 For the S3a code, this surfaces in [HDFS-10175](https://issues.apache.org/jira/browse/HDFS-10175); a proposal to make more of those FS level stats visible, so that at the end of an SQL query run, you can get aggregate stats on what all filesystems have been up to. I do think this is admirable, and with the costs of an S3 HTTP reconnect being 0.1s, it's good to know how many there are. But at the same time, these overreaching goals shouldn't be an excuse to hold up the low-level counters and optimisations which can be done at a micro level —what they do say is "don't make this per-class stuff public" until we can do it consistently. The challenge then becomes technical: how to collect metrics which would segue into the bigger piece of work, are useful on their own, and which don't create a long term commitment of API maintenance.
 
+### Metrics are part of your public API
+
+This is the troublesome one: If you start exporting information which your ops team depends on, then you can't remove it. (Wittenauer, a reviewer of a draft of this article, made that point quite clearly).  And of course, you can't really tell which metrics end up being popular. Not unless you add metrics for that, and, well, you are down a slippery slope of meta-metrics at that point.  The real issue here becomes not exposing more information about the System Under Test, but exposing internal state which may change radically across versions.  What I'm initially thinking of doing here is having a switch to enable/disable registration of some of the more deeply internal state variables. The internal state of the components are not automatically visible in production, but can be turned on with a switch. That should at least make clear that some state is private. However, it may turn out that the metrics end up being invaluable during troubleshooting; something you may not discover until you take them away. Keeping an eye on troubleshooting runbooks and being involved in support calls will keep you honest there.  
+
 ### Over-instrumentation
 
 As described by Jakob Homan: 
@@ -211,17 +215,13 @@ This refactoring broke those tests which were directly referencing the variables
 
 I'll cover my final solution in detail, but essentially: making access to metrics via map lookup operations, passing in the string value of the metric. Delegation becomes a matter of extending the main class's map with those of the associated instances of the now-refactored classes. As well as making the tests less brittle, it does enforce keeping the names of metrics invariant, which is good for external consumption.
 
-### Metrics are part of your public API
-
-This is the troublesome one: If you start exporting information which your ops team depends on, then you can't remove it. (Wittenauer, a reviewer of a draft of this article, made that point quite clearly).  And of course, you can't really tell which metrics end up being popular. Not unless you add metrics for that, and, well, you are down a slippery slope of meta-metrics at that point.  The real issue here becomes not exposing more information about the System Under Test, but exposing internal state which may change radically across versions.  What I'm initially thinking of doing here is having a switch to enable/disable registration of some of the more deeply internal state variables. The internal state of the components are not automatically visible in production, but can be turned on with a switch. That should at least make clear that some state is private. However, it may turn out that the metrics end up being invaluable during troubleshooting; something you may not discover until you take them away. Keeping an eye on troubleshooting runbooks and being involved in support calls will keep you honest there.  
-
 ## Related work
 
 I've been trying to find out who else has done this, and what worked/didn't worked, but there doesn't seem too much in published work. There's a lot of coverage of performance testing —but this isn't that. This about a philosophy of instrumenting code for unit and system tests, using metrics as that instrumentation —and in doing so not only enabling better assertions to be made about the state of the System Under Test, but hopefully providing more information for production monitoring and diagnostics. 
 
 Similarly, searches for "Metrics and Testing" tend to focus on Metrics of Test Processes: that is instrumenting the test process itself, and generating statistics. While useful, that doesn't directly add extra instrumentation to the production code.
 
-In *Making Web Services That work* ([Loughran02]), I argued that were metrics tangibly useful to developers,
+In *Making Web Services That work* ([Loughran02]), I argued that were metrics tangibly useful to developers, but never actually came up with a valid way to encourage this, other than saying "developers should play with management tools when debugging things." Using the metric tooling as a way to probe the state of the running system finds that justification.
 
 ## Conclusions
 
@@ -240,4 +240,16 @@ Clearly I have to do this...
 ### Bibliography
 
 [Loughran02] Loughran,S, *[Making Web Services that Work](http://www.hpl.hp.com/techreports/2002/HPL-2002-274.html)*, HP Laboratories, 2002.
+
+### Footnotes
+
+#### `volatile+=` operations in `AtomicLongFieldUpdater` and Java 9.
+
+Turns out there is work going on for high-performance inc/dec/get/set operations on volatiles, [JEP 193](http://openjdk.java.net/jeps/193), with the goal of being "as fast a C/C++ 11 atomics". Some precursor code generation optimisations are coming out in Spring 2016 with JDK 8u76 [bringing some of the precursor changes](http://shipilev.net/blog/2015/faster-atomic-fu/). This means I should just embrace `AtomicLongFieldUpdater` and stop complaining.
+
+### History
+
+1. 2016-04-30 Published
+1. 2016-05-01 Minor edits and reordering of a couple of sections
+1. 2016-05-03 Footnote on `AtomicLongFieldUpdater`
  
